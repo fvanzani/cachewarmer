@@ -17,3 +17,9 @@ Show syntax:
 ```
 php cacheWarmer.php -h
 ```
+
+### Examples
+
+```
+php8.1 cacheWarmer.php   -u https://www.mymagentoshop.com/ -s 1 -l 3 -e 'uenc,customer,checkout,wishlist'
+```
