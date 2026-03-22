@@ -16,14 +16,14 @@ A simple PHP command line cache warmer that crawls a website to trigger cache ge
 
 ## Install 
 
-Just download the file `cacheWarmer.php`.
+Just download the file `cache-warmer.php`.
 
 ## Usage
 
 Show syntax and available options: 
 
 ```bash
-php cacheWarmer.php -h
+php cache-warmer.php -h
 ```
 
 ### Options
@@ -40,13 +40,13 @@ php cacheWarmer.php -h
 
 **Basic usage:**
 ```bash
-php cacheWarmer.php -u https://www.mymagentoshop.com/
+php cache-warmer.php -u https://www.mymagentoshop.com/
 ```
 
 **Advanced usage:**
 Recursive crawl up to level 3, waiting 1 second between requests, and excluding common dynamic pages:
 ```bash
-php cacheWarmer.php -u https://www.mymagentoshop.com/ -s 1 -l 3 -e 'uenc,customer,checkout,wishlist'
+php cache-warmer.php -u https://www.mymagentoshop.com/ -s 1 -l 3 -e 'uenc,customer,checkout,wishlist'
 ```
 
 ## How it works
