@@ -19,23 +19,33 @@ class cacheWarmer
         }
 
         $opts = getopt('u:l:e:s:h', ['url:', 'level:', 'excludes:', 'help', 'sleep:']);
+        if ($opts === false) {
+            $opts = [];
+        }
         $url = $opts['u'] ?? $opts['url'] ?? '';
+        if (is_array($url)) {
+            $url = end($url);
+        }
         $isHelp = isset($opts['h']) || isset($opts['help']);
         $excludes=$opts['e'] ?? $opts['excludes'] ?? null;
         $level=$opts['l'] ?? $opts['level'] ?? null;
         $sleep=$opts['s'] ?? $opts['sleep'] ?? null;
-        $argsMultiple = (is_array($sleep)|| is_array($level)||is_array($excludes)||is_array($url)) ;
-        $errUrl = parse_url($url)===false || !in_array(parse_url($url,PHP_URL_SCHEME),['http','https']);
+        $argsMultiple = (is_array($sleep)|| is_array($level)||is_array($excludes)) ;
+        
+        $parsedUrl = parse_url((string)$url);
+        $scheme = $parsedUrl['scheme'] ?? '';
+        $errUrl = $parsedUrl === false || !in_array($scheme, ['http', 'https']);
+
         if ($isHelp || $errUrl || $argsMultiple ) {
             echo "Syntax: php ". $_SERVER['PHP_SELF'] ." -u <url> [-l|--level <level>] [-e|--excludes <excludes>] [-s|--sleep <sleep>] [-h|--help]\n";
             echo "Example: php ".$_SERVER['PHP_SELF']." -u https://www.webpagetest.org/ \n";
             echo "Example: php ".$_SERVER['PHP_SELF']." -u https://www.webpagetest.org/ --excludes '/customer,/checkout' \n";
             exit;
         }
-        $this->startUrl=$url;
+        $this->startUrl=(string)$url;
         $this->sleep = (int) ($sleep ??  $this->sleep);
-        $this->excludes=$excludes ? explode(',',$excludes): $this->excludes;
-        $this->maxLevel = (int) abs( $level ?? $this->maxLevel);
+        $this->excludes=$excludes ? explode(',',(string)$excludes): $this->excludes;
+        $this->maxLevel = (int) abs( (int)($level ?? $this->maxLevel));
         $excludesStr=implode(',',$this->excludes);
         echo("Url: {$this->startUrl} \nExcludes:{$excludesStr} \nSleep: {$this->sleep} \nLevel: {$this->maxLevel}\n");
 
@@ -107,13 +117,15 @@ class cacheWarmer
     }
     public function relativeToAbsolute($url)
     {
-        if (parse_url($url,PHP_URL_SCHEME)) {
+        if (parse_url((string)$url, PHP_URL_SCHEME)) {
             return $url;
         }
-        if (!str_starts_with($url,'/')) {
-            $newUrl=$this->startUrl.'/'.$url;
+        if (!str_starts_with((string)$url, '/')) {
+            $newUrl = $this->startUrl . '/' . $url;
         } else {
-            $newUrl=parse_url($this->startUrl,PHP_URL_SCHEME).'://'.parse_url($this->startUrl,PHP_URL_HOST).$url;
+            $scheme = parse_url($this->startUrl, PHP_URL_SCHEME) ?? 'http';
+            $host = parse_url($this->startUrl, PHP_URL_HOST) ?? 'localhost';
+            $newUrl = $scheme . '://' . $host . $url;
         }
         return $newUrl;
     }
@@ -138,21 +150,30 @@ class cacheWarmer
 
     private function getHtmlFromUrl($url)
     {
-        return @file_get_contents($url);
+        if (!$url) {
+            return '';
+        }
+        return @file_get_contents((string)$url);
     }
 
     private function removeQueryFragment(string $url)
     {
-        $scheme=parse_url($url,PHP_URL_SCHEME)?parse_url($url,PHP_URL_SCHEME).'://':'';
-        $host=parse_url($url,PHP_URL_HOST);
-        $port=parse_url($url,PHP_URL_PORT)?':'.parse_url($url,PHP_URL_PORT):'';
-        $path=parse_url($url,PHP_URL_PATH);
-        $link="{$scheme}{$host}{$port}{$path}";
+        $parsed = parse_url($url);
+        if ($parsed === false) {
+            return $url;
+        }
+        $scheme = isset($parsed['scheme']) ? $parsed['scheme'] . '://' : '';
+        $host = $parsed['host'] ?? '';
+        $port = isset($parsed['port']) ? ':' . $parsed['port'] : '';
+        $path = $parsed['path'] ?? '';
+        $link = "{$scheme}{$host}{$port}{$path}";
         return $link;
     }
 }
 
-(new cacheWarmer())->execute();
+if (basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME'])) {
+    (new cacheWarmer())->execute();
+}
 
 
 
