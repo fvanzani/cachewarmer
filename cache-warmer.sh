@@ -7,7 +7,7 @@ while [[ "$1" == "--exclude" || "$1" == "-e" ]]; do
   shift 2
 done
 
-USER_AGENT="Mozilla/5.0 (compatible; CacheWarmer/1.0; +https://github.com/fabrizio/cachewarmer)"
+USER_AGENT="Mozilla/5.0 (compatible; CacheWarmer/1.0; +https://github.com/fvanzani/cachewarmer)"
 
 # Build exclude grep filter
 exclude_filter() {
