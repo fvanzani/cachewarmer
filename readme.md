@@ -1,42 +1,33 @@
-# Simple PHP Cache Warmer
+# Simple PHP & Bash Cache Warmer
 
-A simple PHP command line cache warmer that crawls a website to trigger cache generation.
+A simple set of tools to crawl a website or its sitemaps to trigger cache generation.
 
 ## Features
 
-- Recursive crawling with configurable depth.
+- **PHP Implementation**: Recursive crawling with configurable depth.
+- **Bash Implementation**: Sitemap-based warming using `robots.txt`.
 - Exclude specific URL patterns.
-- Configurable delay between requests to avoid overloading the server.
-- Reports response times for each URL.
-- No dependencies, single-file script.
+- Configurable delay between requests.
+- Reports response times (PHP).
 
 ## Prerequisites
 
 - PHP >= 8.1
+- Bash (for `cache-warmer.sh`) with `curl`, `grep`, `sed`, `xargs`.
 
 ## Install 
 
-Just download the file `cache-warmer.php`.
+Just download the files `cache-warmer.php` and/or `cache-warmer.sh`.
 
 ## Usage
+
+### PHP Script
 
 Show syntax and available options: 
 
 ```bash
 php cache-warmer.php -h
 ```
-
-### Options
-
-| Short | Long | Description | Default |
-|-------|------|-------------|---------|
-| `-u` | `--url` | The starting URL (required). | - |
-| `-l` | `--level` | Maximum recursion level for crawling. | `2` |
-| `-e` | `--excludes` | Comma-separated list of strings to exclude from URLs. | - |
-| `-s` | `--sleep` | Seconds to wait between each request. | `0` |
-| `-h` | `--help` | Show this help message. | - |
-
-### Examples
 
 **Basic usage:**
 ```bash
@@ -48,6 +39,16 @@ Recursive crawl up to level 3, waiting 1 second between requests, and excluding 
 ```bash
 php cache-warmer.php -u https://www.mymagentoshop.com/ -s 1 -l 3 -e 'uenc,customer,checkout,wishlist'
 ```
+
+### Bash Script
+
+The Bash script fetches URLs from sitemaps and warms them.
+
+```bash
+chmod +x cache-warmer.sh
+./cache-warmer.sh https://www.mymagentoshop.com/ -e '/customer' -e '/checkout'
+```
+
 
 ## How it works
 
