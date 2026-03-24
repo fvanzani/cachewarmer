@@ -4,7 +4,7 @@ A simple set of tools to crawl a website or its sitemaps to trigger cache genera
 
 ## Features
 
-- **PHP Implementation**: Recursive crawling with configurable depth.
+- **PHP Implementation**: Recursive crawling with configurable depth and **concurrency**.
 - **Bash Implementation**: Sitemap-based warming using `robots.txt`.
 - Exclude specific URL patterns.
 - Configurable delay between requests.
@@ -35,9 +35,9 @@ php cache-warmer.php -u https://www.mymagentoshop.com/
 ```
 
 **Advanced usage:**
-Recursive crawl up to level 3, waiting 1 second between requests, and excluding common dynamic pages:
+Recursive crawl up to level 3, with 5 parallel requests, waiting 1 second between requests, and excluding common dynamic pages:
 ```bash
-php cache-warmer.php -u https://www.mymagentoshop.com/ -s 1 -l 3 -e 'uenc,customer,checkout,wishlist'
+php cache-warmer.php -u https://www.mymagentoshop.com/ -s 1 -l 3 -c 5 -e 'uenc,customer,checkout,wishlist'
 ```
 
 ### Bash Script
